@@ -1,0 +1,45 @@
+version: "3.1"
+
+services:
+  db:
+    image: mysql:5.7.27
+    container_name: db
+    environment:
+      MYSQL_ROOT_PASSWORD: 427424
+      MYSQL_DATABASE: fei2022
+      MYSQL_USER: keko
+      MYSQL_PASSWORD: 427424
+    ports:
+      - 4000:3306
+    volumes:
+      - dbdata:/var/lib/mysql
+
+  myadmin:
+    image: phpmyadmin/phpmyadmin
+
+    links:  #conecta los contenedores
+      - db
+    environment:
+      PMA_PORT: 3306
+      PMA_USER: root
+      PMA_PASSWORD: 427424
+    ports: 
+      - 8001:80
+
+  app:
+    image: yiisoftware/yii2-php:7.1-apache
+    links:
+      - db
+    volumes:
+      - ./src/composer/cache:/root/.composer/cache:delegated
+      - ./src/basic:/app:delegated 
+    environment: 
+      DDBB_NAME: fei2022
+      DDBB_HOST: db
+      DDBB_PASSWORD: 427424
+      PRODUCCION: 0
+    ports:
+      - 8000:80
+
+volumes: 
+  dbdata: 
